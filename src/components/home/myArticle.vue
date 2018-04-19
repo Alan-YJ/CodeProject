@@ -125,7 +125,7 @@ export default {
           if(res.data.status==1){
             this.$message.success('删除成功')
             //关闭提示框
-            this.centerDialogVisible = flase
+            this.centerDialogVisible = false
             //刷新页面
             this.getList(this.myInfo,this.page)
           }

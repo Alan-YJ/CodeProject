@@ -1,6 +1,6 @@
-export default class NavigationItem{
-    constructor(text,route){
+export class NavigationItem{
+    constructor(text,link){
         this.text = text
-        this.route = route
+        this.link = link
     }
 }

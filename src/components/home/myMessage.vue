@@ -39,7 +39,6 @@ export default {
       page:1,
       myList:[],
       pageObj:{},
-      
     }
   },
   computed:{

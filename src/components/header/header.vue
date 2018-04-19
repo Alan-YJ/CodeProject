@@ -41,7 +41,6 @@
 </template>
 <script>
 import Axios from 'axios'
-import Navigation from 'common/js/Navigation';
 import {getCookie,clearCookie} from 'common/js/setCookies.js'
 import {mapGetters,mapMutations} from 'vuex';
 export default {
@@ -78,12 +77,11 @@ export default {
       }
   },
   created(){
+      //打开页面的时候判断是否已经登陆
       if(getCookie('user')&&getCookie('user')!=''){
         let u = JSON.parse(getCookie('user'));
         this.SET_USER(u)
         sessionStorage.setItem('user',u)
-        localStorage.setItem('time',date.setDate(date.getDate()+7))
-        localStorage.setItem('user',JSON.stringify(u))
       }
       if(!this.user.token){
           if(sessionStorage.getItem('user')){
