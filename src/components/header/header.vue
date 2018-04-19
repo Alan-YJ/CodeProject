@@ -50,10 +50,9 @@ export default {
       }
   },
   methods:{
+      //清除登陆信息
       loginOut(){
-          //清除登陆信息
           sessionStorage.clear();
-          localStorage.clear();
           if(getCookie('user')!=''){
               clearCookie('user')
           }
@@ -73,6 +72,7 @@ export default {
           user:'user',
           navList:'navList'
       }),
+      //是否已经登陆
       isLogin(){ 
           return this.user.token
       }

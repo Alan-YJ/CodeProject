@@ -62,9 +62,8 @@ export default {
             //保存到session 
             sessionStorage.setItem('user',JSON.stringify(data.data))
             let date = new Date()
+            //判断是否勾选保存登陆信息
             if(this.checked){
-              localStorage.setItem('time',date.setDate(date.getDate()+7))
-              localStorage.setItem('user',JSON.stringify(data.data))
               //保存到cookie
               setCookie('user',JSON.stringify(data.data),7)
             }

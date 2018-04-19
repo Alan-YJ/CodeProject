@@ -24,6 +24,13 @@
       <el-pagination layout="prev, pager, next" @current-change='currentPage' :total="pageObj.total">
       </el-pagination>
     </div>
+    <el-dialog :visible.sync="centerDialogVisible" width="30%" center>
+      <div class='tip'>确认删除？</div>
+      <span slot='footer' class='dialog-footer'>
+        <el-button @click='centerDialogVisible=false'>取消</el-button>
+        <el-button type='primary' @click='commitDel'>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -32,13 +39,17 @@ import {parseCode} from 'common/js/parseCodeToJson.js'
 import {UnixTimeToTime} from 'common/js/UnixTimeToDateTime.js' 
 export default {
   data(){
+    //page -> 当前加载页面序号  myList -> 文章列表  pageObj -> 分页控件需要的数据 delArticle -> 当前准备删除的文章对象   centerDialogVisible -> 控制对话框是否显示
     return{
       page:1,
       myList:{},
       pageObj:{},
+      delArticle:{},
+      centerDialogVisible :false
     }
   },
   computed:{
+    //获取用户信息
     myInfo(){
       return JSON.parse(sessionStorage.getItem('user'))
     }
@@ -81,7 +92,11 @@ export default {
         }
       })
     },
+    //斑马线
     tableRowClassName({row, rowIndex}) {
+       if(rowIndex>4){
+         rowIndex = rowIndex-4
+       }
         if (rowIndex === 1) {
           return 'warning-row';
         } else if (rowIndex === 3) {
@@ -98,11 +113,28 @@ export default {
             row:row
           }
         })
-        console.log(index, row);
+        //console.log(index, row);
       },
-      handleDelete(index, row) {
+      //确定删除
+      commitDel(){
         //删除文章
-        console.log(index, row);
+        Axios.post('/api/iweb/topic/topicDel',{
+          topic_id:this.delArticle.topic_id,
+          user_id:this.myInfo.user_id
+        }).then((res)=>{
+          if(res.data.status==1){
+            this.$message.success('删除成功')
+            //关闭提示框
+            this.centerDialogVisible = flase
+            //刷新页面
+            this.getList(this.myInfo,this.page)
+          }
+        })
+      },
+      //点击删除按钮，获取当前行数据
+      handleDelete(index, row) {
+        this.delArticle = row
+        this.centerDialogVisible = true
       }
   }
 }
@@ -117,5 +149,7 @@ export default {
     background: #f0f9eb
   .block
     margin-top:50px
+    text-align:center
+  .tip
     text-align:center
 </style>

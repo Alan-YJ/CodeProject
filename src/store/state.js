@@ -1,14 +1,24 @@
+import Navigation from '../common/js/Navigation'
+
 const state = {
     //user -> 保存登陆用户信息  myLinks -> 个人中心链接列表
     user:{},
     myLinks:[
-        {text:'我的信息',url:'baseInfo'},
-        {text:'修改密码',url:'resetPassword'},
-        {text:'我的帖子',url:'myArticle'},
-        {text:'我的收藏',url:'myCollection'},
-        {text:'我的消息',url:'myMessage'},
-        {text:'我的任务',url:'myTask'},
+        new Navigator('我的信息','baseInfo'),
+        new Navigator('修改密码','resetPassword'),
+        new Navigator('我的帖子','myArticle'),
+        new Navigator('我的收藏','myCollection'),
+        new Navigator('我的消息','myMessage'),
+        new Navigator('我的任务','myTask')
     ],
+    // myLinks:[
+    //     {text:'我的信息',url:'baseInfo'},
+    //     {text:'修改密码',url:'resetPassword'},
+    //     {text:'我的帖子',url:'myArticle'},
+    //     {text:'我的收藏',url:'myCollection'},
+    //     {text:'我的消息',url:'myMessage'},
+    //     {text:'我的任务',url:'myTask'},
+    // ],
     imgList:[
         {title:'',key:'1',url:'http://xiaosusu.cn/1.jpg'},
         {title:'',key:'2',url:'http://xiaosusu.cn/2.jpg'},
