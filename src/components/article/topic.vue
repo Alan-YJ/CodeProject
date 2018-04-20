@@ -16,11 +16,11 @@
       <div class='sc-wrapper'>
         <div class=''>
           <div class='sc' @click='coll'>
-            <span class='icon-sc' :class='iscoll?"active":""'></span>
+            <span class='icon-sc' :class='content.is_collect==1?"active":""'></span>
             <span>收藏</span> 
           </div>
           <div class='zan' @click='zan'>
-            <span class='icon-thumb_up' :class='iszan?"active":""'></span>
+            <span class='icon-thumb_up' :class='content.is_like==1?"active":""'></span>
             <span>赞</span>
           </div>
         </div>
@@ -46,20 +46,39 @@
         </p>
       </div>
       <!-- 评论列表 -->
-      <div v-if='commentList.length&&commentList.length>0' class='comment-list'>
+      <div v-if='commentList.length&&commentList.length>0' class='comment-list' @click='hiddenRecomment'>
         <ul>
           <li v-for='item in commentList' :key='item.topic_comment_id' class='comment-item'>
+            <div>
             <div class='content-wrapper'>
               <img v-lazy='item.avatar' class='avatar'>
               <span class='fh'>:</span>
               <span>{{item.content}}</span>
             </div>
             <div class='comment-btn-wrapper'>
-              <span>{{getTime(item.c_time)}}</span>
-              <span class='re-comment'>
+              <span class='time'>{{getTime(item.c_time)}}</span>
+              <span class='re-comment' @click='showReComment($event,item)'>
                 回复{{ifHasComment(item)}}
-                </span>
+              </span>
             </div>
+            </div>
+            <!-- 子评论 -->
+            <div class='sub-comment-wrapper' v-if='retopic_id==item.topic_comment_id'>
+              <div class='sub-comment'>
+                <el-input type='textarea' resize='none' v-model='comment' placeholder="请输入评论内容"></el-input>
+                <div class='btn'>
+                  <el-button type='danger' >发布评论</el-button>
+                </div>
+              </div>
+              <ul>
+                <li v-for='subitem in item.child' :key='subitem.topic_comment_id' class='sub-recomment-item'>
+                  <div class='sub-avatar'>
+                    <img v-lazy='subitem.avatar'>
+                  </div>回复:
+                  <div class='sub-content'> {{subitem.content}}</div>
+                </li>
+              </ul>
+              </div>
           </li>
         </ul>
         <!-- 加载按钮 -->
@@ -84,10 +103,9 @@ export default {
       commentList:[],
       moreComment:true,
       loading: true,
-      iszan:false,
-      iscoll:false,
       page:1,
-      topic_id:''
+      topic_id:'',
+      retopic_id:''
     }
   },
   created(){
@@ -119,12 +137,19 @@ export default {
       return new Date(parseInt(this.content.c_time) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ')
     },
     isLogin(){
-      return sessionStorage.getItem('user')
+      return JSON.parse(sessionStorage.getItem('user'))
     }
   },
   mounted(){
   },
   methods:{
+    hiddenRecomment(){
+      this.retopic_id=''
+    },
+    showReComment(event,comment){
+      this.retopic_id = comment.topic_comment_id
+      console.info(event,comment)
+    },
     ifHasComment(item){
       if(item.child){
         return '('+item.child.length+')'
@@ -151,12 +176,28 @@ export default {
     },
     //点赞和收藏
     zan(){
-      this.$message.success(this.iszan?'取消成功':'点赞成功')
-      this.iszan = !this.iszan
+        Axios.post('/api/iweb/like/topic_like',{
+          user_id:this.isLogin.user_id,
+          topic_id:this.topic_id,
+          token:this.isLogin.token
+        }).then((res)=>{
+          if(res.data.status==1){
+            this.$message.success(res.data.info)
+            this.content.is_like = this.content.is_like==0?1:0
+          }
+        })
     },
     coll(){
-      this.$message.success(this.iszan?'取消成功':'收藏成功')
-      this.iscoll = !this.iscoll
+        Axios.post('/api/iweb/collect/topic_collect',{
+          user_id:this.isLogin.user_id,
+          topic_id:this.topic_id,
+          token:this.isLogin.token
+        }).then((res)=>{
+          if(res.data.status==1){
+            this.$message.success(res.data.info)
+            this.content.is_collect = this.content.is_collect==0?1:0
+          }
+        })
     },
     getTime(time){
       return UnixTimeToDateTime(time)
@@ -232,27 +273,51 @@ export default {
       margin-top:20px
       background-color:#f7f8fa
       .comment-item
-        display :flex
-        justify-content :space-between
         padding:10px
         margin-bottom:10px
         border-bottom:1px solid #dcdcdc
-        .content-wrapper
+        &>div
           display :flex
-          align-items:center
-          .avatar
-            flex:0 0 45px
-            width:45px
-            height:45px
-          .fh
-            flex:0 0 5px
-          span 
-            flex:1
-            margin-left:5px
+          justify-content :space-between
+          .content-wrapper
+            display :flex
+            align-items:center
+            .avatar
+              flex:0 0 45px
+              width:45px
+              height:45px
+            .fh
+              flex:0 0 5px
+            span 
+              flex:1
+              margin-left:5px
+        .sub-comment-wrapper
+          display :block
+          width:85%
+          margin-left :60px
+          .sub-comment
+            padding:10px
+            background-color:#efefef
+            .btn
+              margin-top:10px
+              text-align:right
+          ul
+            .sub-recomment-item
+              display :flex
+              align-items:center
+              padding:10px
+              border-bottom:1px solid #dcdcdc
+              .sub-avatar
+                margin-left:10px
+                img
+                  width:50px
+                  height:50px
         .comment-btn-wrapper
-          flex:0 0 100px
+          flex:0 0 150px
           display :flex
           align-items:center
+          .time
+            width:70px
           .re-comment
             margin-left:5px
             color:$color-active
