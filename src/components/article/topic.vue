@@ -46,7 +46,7 @@
         </p>
       </div>
       <!-- 评论列表 -->
-      <div v-if='commentList.length&&commentList.length>0' class='comment-list' @click='hiddenRecomment'>
+      <div v-if='commentList.length&&commentList.length>0' class='comment-list' @click='hiddenRecomment($event)'>
         <ul>
           <li v-for='item in commentList' :key='item.topic_comment_id' class='comment-item'>
             <div>
@@ -63,7 +63,7 @@
             </div>
             </div>
             <!-- 子评论 -->
-            <div class='sub-comment-wrapper' v-if='retopic_id==item.topic_comment_id'>
+            <div class='sub-comment-wrapper' v-if='retopic_id==item.topic_comment_id' @click='nothing($event)'>
               <div class='sub-comment'>
                 <el-input type='textarea' resize='none' v-model='comment' placeholder="请输入评论内容"></el-input>
                 <div class='btn'>
@@ -71,7 +71,7 @@
                 </div>
               </div>
               <ul>
-                <li v-for='subitem in item.child' :key='subitem.topic_comment_id' class='sub-recomment-item'>
+                <li v-for='(subitem,index) in item.child' :key='index+subitem.topic_comment_id' class='sub-recomment-item'>
                   <div class='sub-avatar'>
                     <img v-lazy='subitem.avatar'>
                   </div>回复:
@@ -143,12 +143,18 @@ export default {
   mounted(){
   },
   methods:{
-    hiddenRecomment(){
-      this.retopic_id=''
+    nothing(event){
+      event.stopPropagation();
+    },
+    hiddenRecomment(event){
+      if(this.retopic_id!=''){
+        this.retopic_id =''
+      }
+      // this.retopic_id=''
     },
     showReComment(event,comment){
       this.retopic_id = comment.topic_comment_id
-      console.info(event,comment)
+      event.stopPropagation();
     },
     ifHasComment(item){
       if(item.child){
