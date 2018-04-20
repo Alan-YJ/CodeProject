@@ -1,3 +1,5 @@
+//时间戳转时间
+
 export function UnixTimeToDateTime(time){
     let now = new Date();
     let oldTime = new Date(parseInt(time)*1000);

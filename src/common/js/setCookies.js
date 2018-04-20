@@ -1,4 +1,4 @@
-
+//操作cookie
 export function setCookie(name,value,days){   /**添加设置cookie**/  
     var name = escape(name);  
     var value = escape(value);  

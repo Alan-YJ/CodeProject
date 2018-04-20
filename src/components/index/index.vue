@@ -4,7 +4,7 @@
       <el-carousel  trigger="click" class='slider'>
         <el-carousel-item v-for='item in imgList' :key='item.key'>
           <h2>{{item.title}}</h2>
-          <img :img="item.url">
+          <img :src="item.url">
         </el-carousel-item>
       </el-carousel>
     </div>

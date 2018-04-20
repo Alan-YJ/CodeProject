@@ -1,3 +1,4 @@
+//登陆注册用的注册表验证
 export function enterPhoneNum(letter){
     let reg = new RegExp(/[\d]/);
     return reg.test(letter)?letter:''
